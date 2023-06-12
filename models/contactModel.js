@@ -1,4 +1,4 @@
-// const mongooseErrorHandler = require("../middlewares");
+const mongooseErrorHandler = require("../middlewares");
 const { Schema, model } = require("mongoose");
 
 const contactSchema = new Schema(
@@ -21,10 +21,7 @@ const contactSchema = new Schema(
   { versionKey: false }
 );
 
-contactSchema.post("save", (error, _, next) => {
-  error.status = 400;
-  next();
-});
+contactSchema.post("save", mongooseErrorHandler);
 
 const ContactModel = model("contact", contactSchema);
 
