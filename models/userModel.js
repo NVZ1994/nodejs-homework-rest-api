@@ -1,11 +1,13 @@
-// const mongooseErrorHandler = require("../middlewares");
+const mongooseErrorHandler = require("../middlewares/mongooseErrorHandler");
 const { Schema, model } = require("mongoose");
+
+const { subscription } = require("../CONSTANTS/constants");
 
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
     },
     password: {
       type: String,
@@ -19,7 +21,7 @@ const userSchema = new Schema(
     },
     subscription: {
       type: String,
-      enum: ["starter", "pro", "business"],
+      enum: subscription,
       default: "starter",
     },
     token: {
@@ -33,3 +35,9 @@ const userSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
+
+userSchema.post("save", mongooseErrorHandler);
+
+const UserModel = model("user", userSchema);
+
+module.exports = UserModel;

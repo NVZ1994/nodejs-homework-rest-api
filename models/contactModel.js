@@ -1,4 +1,4 @@
-const mongooseErrorHandler = require("../middlewares");
+const { mongooseErrorHandler } = require("../middlewares");
 const { Schema, model } = require("mongoose");
 
 const contactSchema = new Schema(
