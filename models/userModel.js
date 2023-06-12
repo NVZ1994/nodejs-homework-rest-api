@@ -5,10 +5,6 @@ const { subscription } = require("../CONSTANTS/constants");
 
 const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-    },
     password: {
       type: String,
       minlength: 6,
@@ -27,10 +23,6 @@ const userSchema = new Schema(
     token: {
       type: String,
       default: null,
-    },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
     },
   },
   { versionKey: false, timestamps: true }

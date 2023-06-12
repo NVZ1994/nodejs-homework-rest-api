@@ -17,10 +17,10 @@ async function authenticate(req, res, next) {
     const { id } = jwt.verify(token, SECRET_KEY);
     const user = await UserModel.findById(id);
 
-    if (!user) {
+    if (!user || !user.token) {
       next(HttpError(401));
     }
-
+    req.user = user;
     next();
   } catch {
     next(HttpError(401));

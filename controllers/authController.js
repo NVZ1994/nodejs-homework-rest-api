@@ -3,13 +3,14 @@ const jwt = require("jsonwebtoken");
 
 const UserModel = require("../models/userModel");
 const { HttpError, controllerWrapper } = require("../helpers");
+const { subscriptionTypes } = require("../CONSTANTS/constants");
 const { SECRET_KEY } = process.env;
 
-async function signup(req, res, next) {
+async function register(req, res, next) {
   const { email, password } = req.body;
   const user = await UserModel.findOne({ email });
   if (user) {
-    throw HttpError(409, `User with email '${email}' already exists`);
+    throw HttpError(409, "Email in use");
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
@@ -20,32 +21,84 @@ async function signup(req, res, next) {
   });
 
   res.status(201).json({
-    name: newUser.name,
-    email: newUser.email,
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    },
   });
 }
 
-async function signin(req, res, next) {
+async function login(req, res, next) {
   const { email, password } = req.body;
   const user = await UserModel.findOne({ email });
   if (!user) {
-    throw HttpError(401);
+    throw HttpError(401, "Email is wrong");
   }
 
   const passwordComparing = await bcrypt.compare(password, user.password);
   if (!passwordComparing) {
-    throw HttpError(401);
+    throw HttpError(401, "Password is wrong");
   }
 
+  const { _id: id } = user;
+
   const payload = {
-    id: user._id,
+    id,
   };
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1d" });
+  await UserModel.findByIdAndUpdate(id, { token });
+  res.json({
+    token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
+  });
+}
 
-  res.json({ token });
+async function current(req, res, next) {
+  const { subscription, email } = req.user;
+
+  res.json({
+    email,
+    subscription,
+  });
+}
+
+async function logout(req, res, next) {
+  const { _id } = req.user;
+  await UserModel.findByIdAndUpdate(_id, { token: "" });
+
+  res.status(204).json({
+    message: "Logout success",
+  });
+}
+
+async function changeSubscription(req, res, next) {
+  const { subscription } = req.body;
+  const { _id, email } = req.user;
+
+  try {
+    if (!subscriptionTypes.includes(subscription)) {
+      throw HttpError(400, "Invalid subscription value");
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      _id,
+      { subscription },
+      { new: true }
+    );
+
+    res.json({ email, subscription: updatedUser.subscription });
+  } catch (error) {
+    next(error);
+  }
 }
 
 module.exports = {
-  signup: controllerWrapper(signup),
-  signin: controllerWrapper(signin),
+  register: controllerWrapper(register),
+  login: controllerWrapper(login),
+  current: controllerWrapper(current),
+  logout: controllerWrapper(logout),
+  changeSubscription: controllerWrapper(changeSubscription),
 };

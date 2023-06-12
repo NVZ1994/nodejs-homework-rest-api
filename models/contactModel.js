@@ -5,20 +5,27 @@ const contactSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Set name for contact"],
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
+      required: [true, "Email is required"],
     },
     phone: {
       type: String,
+      required: [true, "Phone is required"],
     },
     favorite: {
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 
 contactSchema.post("save", mongooseErrorHandler);

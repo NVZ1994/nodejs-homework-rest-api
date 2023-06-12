@@ -1,24 +1,18 @@
 const { HttpError } = require("../helpers");
 
-const REQUIRED_FIELDS = ["name", "email", "password"];
+const REQUIRED_FIELDS = ["email", "password"];
 
 function authValidatorWrapper(schema) {
   function authBodyValidator(req, res, next) {
     if (!Object.keys(req.body).length) {
-      return res.status(400).json({ message: "missing fields" });
+      return res.status(400).json({ message: "Missing fields" });
     }
 
-    const missingFields = [];
     for (const field of REQUIRED_FIELDS) {
-      if (!req.body[field]) {
-        missingFields.push(field);
+      if (!req.body[field] === undefined) {
+        res.status(400).json({ message: `Field '${field}' must be filled` });
+        return;
       }
-    }
-    if (missingFields.length > 0) {
-      const errorMessage = `Missing required ${missingFields.join(
-        " and "
-      )} field(s)`;
-      return res.status(400).json({ message: errorMessage });
     }
 
     const { error } = schema.validate(req.body);

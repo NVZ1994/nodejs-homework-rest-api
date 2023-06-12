@@ -6,20 +6,27 @@ const schemas = require("../../schemas/users");
 const {
   authValidatorWrapper,
   signInValidatorWrapper,
+  authenticate,
 } = require("../../middlewares");
 
 const router = express.Router();
 
 router.post(
-  "/signup",
+  "/register",
   authValidatorWrapper(schemas.userRegistrationSchema),
-  authController.signup
+  authController.register
 );
 
 router.post(
-  "/signin",
+  "/login",
   signInValidatorWrapper(schemas.userLoginSchema),
-  authController.signin
+  authController.login
 );
+
+router.get("/current", authenticate, authController.current);
+
+router.post("/logout", authenticate, authController.logout);
+
+router.patch("/subscription", authenticate, authController.changeSubscription);
 
 module.exports = router;

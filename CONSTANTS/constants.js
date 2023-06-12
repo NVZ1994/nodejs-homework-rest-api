@@ -1,5 +1,5 @@
-const subscription = ["starter", "pro", "business"];
+const subscriptionTypes = ["starter", "pro", "business"];
 
 module.exports = {
-  subscription,
+  subscriptionTypes,
 };
