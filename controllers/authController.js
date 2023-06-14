@@ -31,13 +31,10 @@ async function register(req, res, next) {
 async function login(req, res, next) {
   const { email, password } = req.body;
   const user = await UserModel.findOne({ email });
-  if (!user) {
-    throw HttpError(401, "Email is wrong");
-  }
-
   const passwordComparing = await bcrypt.compare(password, user.password);
-  if (!passwordComparing) {
-    throw HttpError(401, "Password is wrong");
+
+  if (!user || !passwordComparing) {
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const { _id: id } = user;
