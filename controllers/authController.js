@@ -21,7 +21,7 @@ async function register(req, res, next) {
   const newUser = await UserModel.create({
     ...req.body,
     password: hashPassword,
-    avatarURL: avatarURL,
+    avatarURL,
   });
 
   res.status(201).json({
