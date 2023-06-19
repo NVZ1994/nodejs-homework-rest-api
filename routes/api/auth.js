@@ -14,7 +14,6 @@ const router = express.Router();
 
 router.post(
   "/register",
-  upload.single("avatar"),
   authValidatorWrapper(schemas.userRegistrationSchema),
   authController.register
 );
@@ -28,6 +27,13 @@ router.post(
 router.get("/current", authenticate, authController.current);
 
 router.patch("/subscription", authenticate, authController.changeSubscription);
+
+router.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  authController.changeAvatar
+);
 
 router.post("/logout", authenticate, authController.logout);
 
