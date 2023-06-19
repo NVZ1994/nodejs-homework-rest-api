@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 
 const UserModel = require("../models/userModel");
 const { HttpError, controllerWrapper } = require("../helpers");
@@ -13,11 +14,14 @@ async function register(req, res, next) {
     throw HttpError(409, "Email in use");
   }
 
+  const avatarURL = gravatar.url(email);
+
   const hashPassword = await bcrypt.hash(password, 10);
 
   const newUser = await UserModel.create({
     ...req.body,
     password: hashPassword,
+    avatarURL: avatarURL,
   });
 
   res.status(201).json({

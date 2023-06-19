@@ -7,12 +7,14 @@ const {
   authValidatorWrapper,
   signInValidatorWrapper,
   authenticate,
+  upload,
 } = require("../../middlewares");
 
 const router = express.Router();
 
 router.post(
   "/register",
+  upload.single("avatar"),
   authValidatorWrapper(schemas.userRegistrationSchema),
   authController.register
 );
