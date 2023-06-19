@@ -25,8 +25,8 @@ router.post(
 
 router.get("/current", authenticate, authController.current);
 
-router.post("/logout", authenticate, authController.logout);
-
 router.patch("/subscription", authenticate, authController.changeSubscription);
+
+router.post("/logout", authenticate, authController.logout);
 
 module.exports = router;
