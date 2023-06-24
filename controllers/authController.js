@@ -72,7 +72,7 @@ async function resendVerify(req, res, next) {
   }
 
   if (user.verify) {
-    throw HttpError(400, { message: "Verification has already been passed" });
+    throw HttpError(400, "Verification has already been passed");
   }
 
   const verifyEmail = {
