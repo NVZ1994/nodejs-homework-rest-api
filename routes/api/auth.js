@@ -7,6 +7,7 @@ const {
   authValidatorWrapper,
   signInValidatorWrapper,
   authenticate,
+  upload,
 } = require("../../middlewares");
 
 const router = express.Router();
@@ -25,8 +26,15 @@ router.post(
 
 router.get("/current", authenticate, authController.current);
 
-router.post("/logout", authenticate, authController.logout);
-
 router.patch("/subscription", authenticate, authController.changeSubscription);
+
+router.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  authController.changeAvatar
+);
+
+router.post("/logout", authenticate, authController.logout);
 
 module.exports = router;

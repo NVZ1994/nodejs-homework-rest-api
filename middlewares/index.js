@@ -5,6 +5,7 @@ const mongooseErrorHandler = require("./mongooseErrorHandler");
 const isValidId = require("./isValidId");
 const favoriteFieldValidationWrapper = require("./favoriteFieldValidator");
 const authenticate = require("./authenticate");
+const upload = require("./upload");
 
 module.exports = {
   bodyValidatorWrapper,
@@ -14,4 +15,5 @@ module.exports = {
   authValidatorWrapper,
   signInValidatorWrapper,
   authenticate,
+  upload,
 };
