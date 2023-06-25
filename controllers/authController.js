@@ -159,35 +159,29 @@ async function changeSubscription(req, res, next) {
 async function changeAvatar(req, res, next) {
   const { _id } = req.user;
 
-  const user = await UserModel.findOne({ _id });
-  if (!user) {
-    throw HttpError(401);
-  }
-
-  const { path: oldPath, filename } = req.file;
-  const uniqueFileName = `${user.email}_${filename}`;
-
   try {
+    const user = await UserModel.findById({ _id });
+
+    if (!user) {
+      throw HttpError(401);
+    }
+
+    const { path: oldPath, filename } = req.file;
+    const uniqueFileName = `${user.email}_${filename}`;
+
     const newPath = path.join(avatarsFolderPath, uniqueFileName);
+    const image = await Jimp.read(oldPath);
 
-    Jimp.read(oldPath, (err, filename) => {
-      if (err) {
-        throw HttpError();
-      }
-      filename.resize(250, 250).write(newPath);
-    });
+    await image.resize(250, 250).writeAsync(newPath);
 
-    await fs.unlink(oldPath, (err) => {
-      if (err) {
-        throw HttpError(500, "Failed to delete temporary file");
-      }
-    });
+    await fs.unlink(oldPath);
 
     const avatarURL = `/avatars/${uniqueFileName}`;
     user.avatarURL = avatarURL;
+
     await user.save();
 
-    res.status(200).json({
+    res.json({
       avatarURL,
     });
   } catch (error) {
