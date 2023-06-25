@@ -160,7 +160,7 @@ async function changeAvatar(req, res, next) {
   const { _id } = req.user;
 
   try {
-    const user = await UserModel.findById({ _id });
+    const user = await UserModel.findById(_id);
 
     if (!user) {
       throw HttpError(401);
@@ -168,18 +168,23 @@ async function changeAvatar(req, res, next) {
 
     const { path: oldPath, filename } = req.file;
     const uniqueFileName = `${user.email}_${filename}`;
-
     const newPath = path.join(avatarsFolderPath, uniqueFileName);
+
     const image = await Jimp.read(oldPath);
-
     await image.resize(250, 250).writeAsync(newPath);
-
     await fs.unlink(oldPath);
 
     const avatarURL = `/avatars/${uniqueFileName}`;
-    user.avatarURL = avatarURL;
 
-    await user.save();
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      _id,
+      { avatarURL },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw HttpError(500, "Failed to update user");
+    }
 
     res.json({
       avatarURL,
