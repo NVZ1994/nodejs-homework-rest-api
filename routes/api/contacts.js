@@ -5,7 +5,7 @@ const schemas = require("../../schemas/contacts");
 const controllers = require("../../controllers/contactsController");
 const {
   isValidId,
-  bodyValidatorWrapper,
+  validateBody,
   favoriteFieldValidationWrapper,
   authenticate,
 } = require("../../middlewares");
@@ -16,16 +16,12 @@ router.get("/", controllers.getAllContacts);
 
 router.get("/:contactId", isValidId, controllers.getContactById);
 
-router.post(
-  "/",
-  bodyValidatorWrapper(schemas.contactsSchema),
-  controllers.addContact
-);
+router.post("/", validateBody(schemas.contactsSchema), controllers.addContact);
 
 router.put(
   "/:contactId",
   isValidId,
-  bodyValidatorWrapper(schemas.contactsSchema),
+  validateBody(schemas.contactsSchema),
   controllers.updateContactById
 );
 

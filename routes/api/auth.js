@@ -3,25 +3,28 @@ const express = require("express");
 const authController = require("../../controllers/authController");
 
 const schemas = require("../../schemas/users");
-const {
-  authValidatorWrapper,
-  signInValidatorWrapper,
-  authenticate,
-  upload,
-} = require("../../middlewares");
+const { validateBody, authenticate, upload } = require("../../middlewares");
 
 const router = express.Router();
 
 router.post(
   "/register",
-  authValidatorWrapper(schemas.userRegistrationSchema),
+  validateBody(schemas.userRegistrationSchema),
   authController.register
 );
 
+router.get("/verify/:verificationToken", authController.verify);
+
 router.post(
   "/login",
-  signInValidatorWrapper(schemas.userLoginSchema),
+  validateBody(schemas.userLoginSchema),
   authController.login
+);
+
+router.post(
+  "/verify",
+  validateBody(schemas.userEmailSchema),
+  authController.resendVerify
 );
 
 router.get("/current", authenticate, authController.current);
